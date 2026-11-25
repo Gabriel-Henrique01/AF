@@ -1,0 +1,72 @@
+<div class="container">
+  <h1>Gestor Financeiro Pessoal</h1>
+
+  <div class="saldo-card" [ngClass]="saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'">
+    <span>Saldo Atual</span>
+    <strong>{{ saldo | currency:'BRL' }}</strong>
+  </div>
+
+  <form (ngSubmit)="cadastrar()" class="formulario">
+    <input type="text" [(ngModel)]="descricao" name="descricao" placeholder="Descrição (ex: Salário, Mercado)" required />
+
+    <select [(ngModel)]="tipo" name="tipo" required>
+      <option value="entrada">Entrada (Receita)</option>
+      <option value="saida">Saída (Despesa)</option>
+    </select>
+
+    <select [(ngModel)]="categoria" name="categoria" required>
+      <option value="" disabled selected>Selecione a categoria</option>
+      <option value="Salário">Salário</option>
+      <option value="Alimentação">Alimentação</option>
+      <option value="Transporte">Transporte</option>
+      <option value="Lazer">Lazer</option>
+      <option value="Contas">Contas</option>
+    </select>
+
+    <input type="number" [(ngModel)]="valor" name="valor" step="0.01" placeholder="Valor (R$)" required />
+
+    <input type="date" [(ngModel)]="data" name="data" required/>
+
+    <button type="submit">Registrar</button>
+  </form>
+
+  <div class="filtro">
+    <label for="filtroCategoria">Filtrar por categoria: </label>
+    <select id="filtroCategoria" [(ngModel)]="categoriaFiltro" (change)="listarMovimentacoes()">
+      <option value="">Todas</option>
+      <option value="Salário">Salário</option>
+      <option value="Alimentação">Alimentação</option>
+      <option value="Transporte">Transporte</option>
+      <option value="Lazer">Lazer</option>
+      <option value="Contas">Contas</option>
+    </select>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Descrição</th>
+        <th>Categoria</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+        <th>Data</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of movimentacoes" [ngClass]="obterClasseCategoria(item.categoria)">
+        <td>{{ item.descricao }}</td>
+        <td><span class="badge">{{ item.categoria }}</span></td>
+        <td>{{ item.tipo === 'entrada' ? 'Entrada' : 'Saída' }}</td>
+        <td>{{ item.valor | currency:'BRL' }}</td>
+        <td>{{ item.data | date:'dd/MM/yyyy':'UTC' }}</td>
+        <td>
+          <button type="button" (click)="excluir(item._id)" class="btn-excluir">Excluir</button>
+        </td>
+      </tr>
+      <tr *ngIf="movimentacoes.length === 0">
+        <td colspan="6" style="text-align: center;">Nenhuma movimentação encontrada.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
